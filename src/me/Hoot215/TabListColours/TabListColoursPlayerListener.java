@@ -41,8 +41,17 @@ public class TabListColoursPlayerListener implements Listener
         String prefix = plugin.getChat().getPlayerPrefix(player);
         if (prefix != null && !prefix.isEmpty())
           {
-            prefix = prefix.substring(0, 2).replace('&', '§');
+            String playerName = player.getName();
+            String name = playerName;
+            name =
+                playerName.length() > 12 ? prefix.substring(0, 2).replace('&',
+                    '§')
+                    + playerName.substring(0, playerName.length() < 14
+                        ? playerName.length() - 1 : 14) : prefix
+                    .substring(0, 2).replace('&', '§')
+                    + playerName
+                    + ChatColor.WHITE;
+            player.setPlayerListName(name);
           }
-        player.setPlayerListName(prefix + player.getName() + ChatColor.WHITE);
       }
   }
