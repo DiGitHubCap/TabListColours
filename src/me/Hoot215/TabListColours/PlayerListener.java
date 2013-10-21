@@ -24,34 +24,44 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scoreboard.Team;
 
-public class TabListColoursPlayerListener implements Listener
+public class PlayerListener implements Listener
   {
-    private TabListColours plugin;
+    private final TabListColours plugin = TabListColours.getInstance();
     
-    public TabListColoursPlayerListener(TabListColours instance)
-      {
-        plugin = instance;
-      }
-    
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerJoin (PlayerJoinEvent event)
       {
         Player player = event.getPlayer();
         String prefix = plugin.getChat().getPlayerPrefix(player);
         if (prefix != null && !prefix.isEmpty())
           {
-            String playerName = player.getName();
-            String name = playerName;
-            name =
-                playerName.length() > 12 ? prefix.substring(0, 2).replace('&',
-                    '§')
-                    + playerName.substring(0, playerName.length() < 14
-                        ? playerName.length() - 1 : 14) : prefix
-                    .substring(0, 2).replace('&', '§')
-                    + playerName
-                    + ChatColor.WHITE;
-            player.setPlayerListName(name);
+            for (Player p : TabListColours.getInstance().getServer()
+                .getOnlinePlayers())
+              {
+                  {
+                    Team team = p.getScoreboard().getTeam(prefix);
+                    if (team == null)
+                      {
+                        team = p.getScoreboard().registerNewTeam(prefix);
+                        team.setPrefix(ChatColor.translateAlternateColorCodes(
+                            '&', prefix));
+                      }
+                    team.addPlayer(player);
+                  }
+                  {
+                    String pfx = plugin.getChat().getPlayerPrefix(p);
+                    Team team = player.getScoreboard().getTeam(pfx);
+                    if (team == null)
+                      {
+                        team = player.getScoreboard().registerNewTeam(pfx);
+                        team.setPrefix(ChatColor.translateAlternateColorCodes(
+                            '&', pfx));
+                      }
+                    team.addPlayer(p);
+                  }
+              }
           }
       }
   }

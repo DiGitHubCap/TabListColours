@@ -25,8 +25,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class TabListColours extends JavaPlugin
   {
-    private TabListColoursPlayerListener playerListener;
+    private static TabListColours instance;
     private Chat chat;
+    
+    public static TabListColours getInstance ()
+      {
+        return instance;
+      }
     
     public Chat getChat ()
       {
@@ -49,12 +54,16 @@ public class TabListColours extends JavaPlugin
     @Override
     public void onDisable ()
       {
+        instance = null;
+        
         this.getLogger().info("Is now disabled");
       }
     
     @Override
     public void onEnable ()
       {
+        instance = this;
+        
         if (this.setupChat())
           {
             this.getLogger().info("Vault linked successfully");
@@ -66,9 +75,9 @@ public class TabListColours extends JavaPlugin
             this.getPluginLoader().disablePlugin(this);
             return;
           }
-        playerListener = new TabListColoursPlayerListener(this);
+        
         this.getServer().getPluginManager()
-            .registerEvents(playerListener, this);
+            .registerEvents(new PlayerListener(), this);
         
         this.getLogger().info("Is now enabled");
       }
